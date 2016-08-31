@@ -1,0 +1,354 @@
+#### license: creative commons cc0 1.0 (public domain)
+#### http://creativecommons.org/publicdomain/zero/1.0/
+
+proginf "mkfigos 1.0, jul 2016 mn" print
+
+# you want fastcomp to be 0
+# (removing the 1 works as well as putting a 0 after.)
+# set to 1 when trying the script out, will do less compression of sfs
+fastcomp 0 
+
+isov  split proginf ","  mid 1 1  split isov " "  mid 2 1
+isoname "figos"  plus isov
+
+function addquoted mainv toquote
+    q 34 chr
+    now mainv  plus " "  plus q  plus toquote  plus q  return now
+    fig
+
+function urf p
+    # filename from url
+    # ... return whats to the right of the rightmost "/" (or entire string if "/" not found)
+    r p  reverse  instr r "/" minus 1
+    ifmore r 0
+        now p  right r  return now
+    else
+        now p  return now
+        fig
+    fig
+
+function download iso
+    now iso
+    now urf iso
+    u  urf iso 
+    ck "ls"  addquoted ck u  plus " | wc -l"  arrshell  join ck " "  int
+    ifequal ck 0
+        now "wget"  addquoted now iso  shell
+        fig
+    fig
+
+
+pwd "pwd" arrshell  join pwd "" 
+
+tahrurl "https://archive.org/compress/librepup-6.0.2.0/formats=ISO%20IMAGE&file=/librepup-6.0.2.0.zip"
+refractaurl "https://sourceforge.net/projects/refracta/files/testing/refracta8_xfce_i386_rc1-20160722_1444.iso"
+urftahrurl  urf tahrurl
+urfrefractaurl  urf refractaurl
+
+now download tahrurl
+now download refractaurl
+
+now "if [ -e librepup-6.0.2.2.iso ] ; then echo ; else unzip librepup-6.0.2.0.zip librepup-6.0.2.2.iso ; fi" shell
+urftahrurl "librepup-6.0.2.2.iso"
+
+fpath pwd  plus "/"  plus urfrefractaurl
+now "ln -s "  addquoted now fpath  addquoted now "refracta8_xfce_i386_rc1-20160722_1444.iso"  plus " 2> /dev/null"  shell
+
+now "mkdir /mnt/mkrefpup"  shell
+now "mkdir /mnt/mkrefpup/iso"  shell
+now "mkdir /mnt/mkrefpup/newiso"  shell
+now "mkdir /mnt/mkrefpup/fs"  shell
+now "mkdir /mnt/mkrefpup/newfs"  shell
+
+now "mkdir /mnt/mkrefpup/unsq"  shell
+now "mkdir /mnt/mkrefpup/refracta"  shell
+now "mkdir /mnt/mkrefpup/refractafs"  shell
+now "mkdir /mnt/mkrefpup/newrefractafs"  shell
+
+
+now "cd /mnt/mkrefpup ; if [ -e logo.16 ] ; then echo ; else wget 'http://murga-linux.com/puppy/viewtopic.php?mode=attach&id=100093' -O logo.16 ; fi"  shell
+
+
+q 34  chr
+now "mount "  plus q  plus pwd  plus "/"  plus urftahrurl  plus q  plus " /mnt/mkrefpup/iso -o loop"  shell
+now "mount "  plus q  plus pwd  plus "/"  plus urfrefractaurl  plus q  plus " /mnt/mkrefpup/refracta -o loop"  shell
+now "cp /mnt/mkrefpup/iso/* /mnt/mkrefpup/newiso"  shell   
+
+# now "cp /mnt/mkrefpup/refracta/live/vmlinuz /mnt/mkrefpup/newiso"  shell   
+# now "cp /mnt/mkrefpup/refracta/live/initrd.img /mnt/mkrefpup/newiso/initrd.gz"  shell   
+now "mkdir /mnt/mkrefpup/newiso/live"  shell
+
+now "cp /mnt/mkrefpup/refracta/live/vmlinuz /mnt/mkrefpup/newiso/live"  shell   
+now "cp /mnt/mkrefpup/refracta/live/initrd.img /mnt/mkrefpup/newiso/live/"  shell   
+
+# now "cp /mnt/mkrefpup/refracta/live/filesystem.squashfs /mnt/mkrefpup/newiso/live"  shell   
+
+
+now "cat /mnt/mkrefpup/refracta/isolinux/live.cfg | head -25 >> /mnt/mkrefpup/newiso/isolinux.cfg"  shell   
+
+
+now "/mnt/mkrefpup/unsq"  chdir
+now "unsquashfs /mnt/mkrefpup/iso/puppy_librepup_6.0.2.2.sfs"  shell
+
+now "/mnt/mkrefpup/refractafs"  chdir
+now "unsquashfs /mnt/mkrefpup/refracta/live/filesystem.squashfs"  shell
+
+now pwd  chdir
+insticewm "ls /mnt/mkrefpup/refractafs/squashfs-root/usr/bin/icewm | wc -l 2> /dev/null"  arrshell  mid 1 1  int
+ifequal insticewm 0
+    now "wget http://http.us.debian.org/debian/pool/main/i/icewm/icewm-common_1.3.8-2_i386.deb"  shell
+    now "wget http://http.us.debian.org/debian/pool/main/i/icewm/icewm_1.3.8-2_i386.deb"         shell
+    now "wget http://http.us.debian.org/debian/pool/main/h/hsetroot/hsetroot_1.0.2-5_i386.deb"        shell
+    now "wget http://http.us.debian.org/debian/pool/main/l/leafpad/leafpad_0.8.18.1-4_i386.deb"       shell
+    now "dpkg-deb -x icewm-common_1.3.8-2_i386.deb /mnt/mkrefpup/refractafs/squashfs-root"       shell
+    now "dpkg-deb -x icewm_1.3.8-2_i386.deb /mnt/mkrefpup/refractafs/squashfs-root"              shell
+    now "dpkg-deb -x hsetroot_1.0.2-5_i386.deb /mnt/mkrefpup/refractafs/squashfs-root"           shell
+    now "dpkg-deb -x leafpad_0.8.18.1-4_i386.deb /mnt/mkrefpup/refractafs/squashfs-root"         shell
+    fig
+
+now "rm /mnt/mkrefpup/refractafs/squashfs-root/etc/alternatives/x-session-manager"  shell
+now "ln -s /usr/bin/icewm-session /mnt/mkrefpup/refractafs/squashfs-root/etc/alternatives/x-session-manager"  shell
+now "rm /mnt/mkrefpup/refractafs/squashfs-root/etc/alternatives/x-window-manager"  shell
+now "ln -s /usr/bin/icewm /mnt/mkrefpup/refractafs/squashfs-root/etc/alternatives/x-window-manager"  shell
+
+now "cp /mnt/mkrefpup/unsq/squashfs-root/usr/local/PupClockset/icons/blank1.png /mnt/mkrefpup/unsq/squashfs-root/usr/share/backgrounds/default.png"  shell
+
+# puppy to refracta
+now "cp /mnt/mkrefpup/unsq/squashfs-root/usr/share/backgrounds/default.png /mnt/mkrefpup/refractafs/squashfs-root/usr/share/backgrounds/xfce"  shell
+now "mkdir /mnt/mkrefpup/refractafs/squashfs-root/usr/local/apps"  shell
+now "cp -r /mnt/mkrefpup/unsq/squashfs-root/usr/local/apps/ROX-Filer /mnt/mkrefpup/refractafs/squashfs-root/usr/local/apps"  shell
+now "cp /mnt/mkrefpup/unsq/squashfs-root/usr/local/bin/rox /mnt/mkrefpup/refractafs/squashfs-root/usr/local/apps"  shell
+
+# refracta to puppy
+now "cp /mnt/mkrefpup/refractafs/squashfs-root/usr/bin/yad /mnt/mkrefpup/unsq/squashfs-root/usr/bin/yad "  shell
+
+#now "sed -i 's/\/usr\/share\/backgrounds\/refracta\/milky-1280x1024-p4-redo.jpg/\/usr\/share\/backgrounds\/xfce\/default.png/g' "
+#nowplus now plus " /mnt/mkrefpup/refractafs/squashfs-root/home/user/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml"  shell
+
+now "sed -i 's/ping/baseping/g' unsq/squashfs-root/usr/local/video_upgrade/video_upgrade_wizard"  shell
+now "sed -i 's/ping/baseping/g' unsq/squashfs-root/usr/local/petget/devx_service_pack.sh"  shell
+now "sed -i 's/ping/baseping/g' unsq/squashfs-root/usr/local/petget/service_pack.sh"  shell
+now "sed -i 's/ping/baseping/g' unsq/squashfs-root/usr/local/yassm/yassm-search"  shell
+now "sed -i 's/ping/baseping/g' unsq/squashfs-root/usr/local/apps/pnethood/pnethood"  shell
+now "sed -i 's/ping -4/baseping -4/g' unsq/squashfs-root/usr/sbin/Pudd"  shell
+now "sed -i 's/ping -c/baseping -c/g' unsq/squashfs-root/usr/share/alsa-base/alsa-info.sh"  shell
+now "sed -i 's/ping/baseping/g' unsq/squashfs-root/usr/sbin/getflash"  shell
+now "sed -i 's/ping/baseping/g' unsq/squashfs-root/usr/sbin/check_internet"  shell
+now "/bin/echo -e '\n\n## auto-edited by mk"  plus isoname  plus "' >> unsq/squashfs-root/usr/local/video_upgrade/video_upgrade_wizard"  shell
+now "/bin/echo -e '\n\n## auto-edited by mk"  plus isoname  plus "' >> unsq/squashfs-root/usr/local/petget/devx_service_pack.sh"  shell
+now "/bin/echo -e '\n\n## auto-edited by mk"  plus isoname  plus "' >> unsq/squashfs-root/usr/local/petget/service_pack.sh"  shell
+now "/bin/echo -e '\n\n## auto-edited by mk"  plus isoname  plus "' >> unsq/squashfs-root/usr/local/yassm/yassm-search"  shell
+now "/bin/echo -e '\n\n## auto-edited by mk"  plus isoname  plus "' >> unsq/squashfs-root/usr/local/apps/pnethood/pnethood"  shell
+now "/bin/echo -e '\n\n## auto-edited by mk"  plus isoname  plus "' >> unsq/squashfs-root/usr/sbin/Pudd"  shell
+now "/bin/echo -e '\n\n## auto-edited by mk"  plus isoname  plus "' >> unsq/squashfs-root/usr/share/alsa-base/alsa-info.sh"  shell
+now "/bin/echo -e '\n\n## auto-edited by mk"  plus isoname  plus "' >> unsq/squashfs-root/usr/sbin/getflash"  shell
+now "/bin/echo -e '\n\n## auto-edited by mk"  plus isoname  plus "' >> unsq/squashfs-root/usr/sbin/check_internet"  shell
+
+q 34  chr
+now "sed -i 's/DesktopBackgroundColor="  plus q  plus "rgb:50\/50\/78"  plus q  plus "/DesktopBackgroundColor="  plus q  plus "rgb:00\/00\/00"  plus q  plus "/g' /mnt/mkrefpup/refractafs/squashfs-root/usr/share/icewm/themes/icedesert/default.theme"  shell
+now "sed -i 's/xterm/xterm -fn 10x20/g' /mnt/mkrefpup/refractafs/squashfs-root/usr/share/icewm/keys"  shell
+
+now "cd /mnt/mkrefpup/refractafs/squashfs-root/usr/share/locale/ ; rm -rf af  am an ang ar ar_EG as ast az az_IR bal be be@latin bg bg_BG bn bn_IN"  shell
+now "cd /mnt/mkrefpup/refractafs/squashfs-root/usr/share/locale/ ; rm -rf bo br bs bs_BA byn ca ca@valencia ceb ckb cmn crh cs csb cy da da_DK de "  shell
+now "cd /mnt/mkrefpup/refractafs/squashfs-root/usr/share/locale/ ; rm -rf de_CH de_DE de@hebrew dv dz el en@arabic en@boldquot en@cyrillic en@greek "  shell
+now "cd /mnt/mkrefpup/refractafs/squashfs-root/usr/share/locale/ ; rm -rf en@hebrew en_NZ en@piglatin en@quot en@shaw eo et et_EE fa fa_IR fi fi_FI"  shell
+now "cd /mnt/mkrefpup/refractafs/squashfs-root/usr/share/locale/ ; rm -rf fil fo frp fur fy ga gd gez gl gu gv haw he hi hr ht hu hy ia id id_ID ig"  shell
+now "cd /mnt/mkrefpup/refractafs/squashfs-root/usr/share/locale/ ; rm -rf io is it it_IT ja ja_JP ka kg kk km kn ko kok ks ku ky la lb lg li lo lt "  shell
+now "cd /mnt/mkrefpup/refractafs/squashfs-root/usr/share/locale/ ; rm -rf lv mai mg mhr mi mk ml ml_IN mn mr ms mt my nah nb nb_NO nds ne nhn nl "  shell
+now "cd /mnt/mkrefpup/refractafs/squashfs-root/usr/share/locale/ ; rm -rf nl_NL nn nn_NO no nso oc or pa pl ps qu rm ro ru rw sc sd se shn si sk sl"  shell
+now "cd /mnt/mkrefpup/refractafs/squashfs-root/usr/share/locale/ ; rm -rf so sq sr sr@ije sr@latin sr@Latn sr_RS sv sv_SE sw szl ta ta_LK te tet tg"  shell
+now "cd /mnt/mkrefpup/refractafs/squashfs-root/usr/share/locale/ ; rm -rf th ti tig tk tl tl_PH tr tt tt@iqtelif tt_RU ug ur ur_PK uz uz@cyrillic "  shell
+now "cd /mnt/mkrefpup/refractafs/squashfs-root/usr/share/locale/ ; rm -rf ve vi wa wae wal wo xh yi yo zh zh_CN zh_HK zh_TW zu"  shell
+
+now "cd /mnt/mkrefpup/refractafs/squashfs-root/usr/share/icons/ ; rm -rf mate"  shell
+now "cd /mnt/mkrefpup/refractafs/squashfs-root/usr/share/icons/ ; rm -rf Adwaita"  shell
+
+now "cd /mnt/mkrefpup/refractafs/squashfs-root/usr/bin/ ; rm abiword"  shell
+
+now "/mnt/mkrefpup/unsq/squashfs-root/usr/share/"  chdir
+now "mkdir fig ; cd fig ; if [ -e fig31_1.0.deb ] ; then echo ; else wget http://distro.ibiblio.org/refracta/files/extra_packages/fig31_1.0.deb ; fi"  shell
+now "cd fig ; dpkg-deb -x fig31_1.0.deb /mnt/mkrefpup/unsq/squashfs-root"  shell
+# now "cd fig ; dpkg-deb -x fig31_1.0.deb /mnt/mkrefpup/refractafs/squashfs-root"  shell # fig is already in refracta rc1 :)
+
+now "/bin/echo -e '#!/bin/bash\nyad --text-info --editable --wrap  --fontname=monospace --show-uri --maximized --listen' > /mnt/mkrefpup/unsq/squashfs-root/usr/bin/yadless ; chmod  +x /mnt/mkrefpup/unsq/squashfs-root/usr/bin/yadless"  shell
+now "/bin/echo -e '#!/bin/bash\nyad --text-info --editable --wrap  --fontname=monospace --show-uri --maximized --listen' > /mnt/mkrefpup/refractafs/squashfs-root/usr/bin/yadless ; chmod  +x /mnt/mkrefpup/refractafs/squashfs-root/usr/bin/yadless"  shell
+
+now "/bin/echo -e '#!/bin/bash\npython -m SimpleHTTPServer' > /mnt/mkrefpup/unsq/squashfs-root/usr/bin/pserver ; chmod  +x /mnt/mkrefpup/unsq/squashfs-root/usr/bin/pserver"  shell
+now "/bin/echo -e '#!/bin/bash\npython -m SimpleHTTPServer' > /mnt/mkrefpup/refractafs/squashfs-root/usr/bin/pserver ; chmod  +x /mnt/mkrefpup/refractafs/squashfs-root/usr/bin/pserver"  shell
+
+function overloadclihelp folder
+clihelp
+python
+    clihelp = """#!/usr/bin/env bash
+
+#### license: creative commons cc0 1.0 (public domain)
+#### http://creativecommons.org/publicdomain/zero/1.0/
+
+proginf="cli help overloading 0.2"
+
+if [[ "$1" == "" ]] 
+then echo
+
+function pq()
+{
+echo -e "$q" | tr '(' '^' | sed "s/\ \@/\x1b\[1\;37m\ \@/g" | sed "s/\@\ /\@\ \x1b\[0\;37m/g" | sed "s/\@\^/\@\x1b\[0\;37m\^/g" | tr '^' '('
+}
+
+q='    \x1b[1;33mrefractahr command line help\x1b[0m ' ; pq
+q='    ' ; pq
+
+echo -e "    \x1b[1;33mhelp usual   \x1b[0m  standard bash help command"
+echo -e "    \x1b[1;33mhelp network \x1b[0m  help with network commands"
+echo -e "    \x1b[1;33mhelp files   \x1b[0m  help with file commands"
+echo -e "    \x1b[1;33mhelp config  \x1b[0m  help with some puppy settings"
+echo -e "    \x1b[1;33mhelp misc    \x1b[0m  commands to reboot, stop beeping, etc."
+echo -e "    \x1b[1;33mhelp coding  \x1b[0m  quick help for coding"
+echo -e "    \x1b[1;33mhelp alias   \x1b[0m  aliases to customize bash"
+echo
+
+else
+
+if [[ "$1" == "usual" ]] 
+then bash -c 'help'
+fi
+
+if [[ "$1" == "network" ]] 
+then echo -e "help with network commands" \\\\n
+
+echo -e \\\\nto connect to available network interfaces: '(use one)'\\\\n
+for p in $(ip link | cut -d " " -f 2 | tr -d ':') ;
+do if [[ "$p" != "lo" ]] ; then echo dhclient $p ;
+fi ; done ;
+echo -e \\\\n \\\\nto find available network interfaces: \\\\n \\\\nip link \| 'cut -d " " -f 2 | tr -d' \\':\\' \\\\n
+
+fi
+
+if [[ "$1" == "files" ]]
+then echo "help with file commands"
+fi
+
+if [[ "$1" == "config" ]]
+then echo "help with some puppy settings"
+fi
+
+if [[ "$1" == "misc" ]]
+then echo "commands to reboot, stop beeping, etc."
+fi
+
+if [[ "$1" == "coding" ]]
+then echo "quick help for coding"
+fi
+
+if [[ "$1" == "alias" ]]
+then echo "aliases to customize bash"
+fi
+
+fi
+"""
+    fig
+    now folder plus "/usr/local/bin"  chdir
+    now "help"     open "w"
+    now clihelp    fprint "help"
+    now "help"     close
+    now "chmod +x ./help" shell
+
+    now folder chdir
+    q  34  chr
+    bs 92  chr  plus q
+    q  bs
+    usualhelp "cat root/.bashrc | grep usualhelp | wc -l"  arrshell  mid 1 1  int
+    ifequal usualhelp 0
+        now "echo alias usualhelp=" plus q plus "bash -c 'help'" plus q plus " >> root/.bashrc"  shell  
+        now "echo alias help=" plus q plus "/usr/local/bin/help" plus q plus " >> root/.bashrc"  shell  
+        fig
+    fig
+
+now "/mnt/mkrefpup/unsq/squashfs-root"          overloadclihelp now
+now "/mnt/mkrefpup/refractafs/squashfs-root"    overloadclihelp now 
+
+quot 34 chr
+now "echo #PS1='\[\e]2;\w\a\e[32m\]$USER:\w\\$ \[\e[0m\]'# >> /mnt/mkrefpup/unsq/squashfs-root/root/.bashrc"  split now "'"  join now quot  split now "#"  join now "'"  shell
+
+
+now "/mnt/mkrefpup/refractafs/squashfs-root/usr/share/icewm/taskbar/icewm.xpm"     open "w"
+icewmicon
+python
+    icewmicon = """/* XPM */
+static char *icewm_xpm[] = {
+"48 20 4 1",
+" 	c None",
+"1	c #009A00",
+"2	c #000000",
+"3	c #000000",
+"                                                ",
+"                                                ",
+"                                  33333         ",
+"                                  311113        ",
+"                                  3111113       ",
+"                                  311111133     ",
+"   22222222222222222222222222222223111111113    ",
+"   311111111111111111111111111111111111111113   ",
+"   311111111111111111111111111111111111111113   ",
+"   311111111111111111111111111111111111111113   ",
+"   311111111111111111111111111111111111111113   ",
+"   311111111111111111111111111111111111111113   ",
+"   22222222222222222222222222222222111111113    ",
+"                                  311111113     ",
+"                                  31111133      ",
+"                                  311113        ",
+"                                  33333         ",
+"                                                ",
+"                                                ",
+"                                                "
+};
+"""
+    fig
+now icewmicon    fprint "/mnt/mkrefpup/refractafs/squashfs-root/usr/share/icewm/taskbar/icewm.xpm"
+now "/mnt/mkrefpup/refractafs/squashfs-root/usr/share/icewm/taskbar/icewm.xpm"     close
+
+
+now "/mnt/mkrefpup/unsq/squashfs-root/bin/baseping"     open "w"
+text "exit 0"
+now text    fprint "/mnt/mkrefpup/unsq/squashfs-root/bin/baseping"
+now "/mnt/mkrefpup/unsq/squashfs-root/bin/baseping"     close
+now "chmod +x /mnt/mkrefpup/unsq/squashfs-root/bin/baseping" shell
+
+now "/mnt/mkrefpup/unsq/squashfs-root/bin/baseping6"     open "w"
+text "exit 0"
+now text    fprint "/mnt/mkrefpup/unsq/squashfs-root/bin/baseping6"
+now "/mnt/mkrefpup/unsq/squashfs-root/bin/baseping6"     close
+now "chmod +x /mnt/mkrefpup/unsq/squashfs-root/bin/baseping6" shell
+
+
+now "sed -i 's/# TaskBarAtTop=0/TaskBarAtTop=1/g' /mnt/mkrefpup/refractafs/squashfs-root/usr/share/icewm/preferences"  shell
+now "sed -i 's/# TaskBarShowClock=1/TaskBarShowClock=0/g' /mnt/mkrefpup/refractafs/squashfs-root/usr/share/icewm/preferences"  shell
+now "sed -i 's/# TaskBarShowAPMStatus=0/TaskBarShowAPMStatus=1/g' /mnt/mkrefpup/refractafs/squashfs-root/usr/share/icewm/preferences"  shell
+
+now "echo '#!/bin/sh -e' > /mnt/mkrefpup/unsq/squashfs-root/etc/rc.local"  shell
+now "chmod  +x /mnt/mkrefpup/unsq/squashfs-root/etc/rc.local ; echo 'modprobe e1000' >> /mnt/mkrefpup/unsq/squashfs-root/etc/rc.local"  shell
+now "echo >> /mnt/mkrefpup/unsq/squashfs-root/etc/rc.local"  shell
+now "echo 'exit 0' >> /mnt/mkrefpup/unsq/squashfs-root/etc/rc.local"  shell
+
+now "echo '#!/bin/sh -e' > /mnt/mkrefpup/refractafs/squashfs-root/etc/rc.local"  shell
+now "echo 'chmod  +x /etc/menu-methods/icewm-common ; /usr/bin/update-menus --menumethod=/etc/menu-methods/icewm-common' >> /mnt/mkrefpup/refractafs/squashfs-root/etc/rc.local"  shell
+now "echo >> /mnt/mkrefpup/refractafs/squashfs-root/etc/rc.local"  shell
+now "echo 'exit 0' >> /mnt/mkrefpup/refractafs/squashfs-root/etc/rc.local"  shell
+
+now "/mnt/mkrefpup/unsq/squashfs-root"  chdir
+iftrue fastcomp
+    now "mksquashfs . /mnt/mkrefpup/newfs/new.sfs -noappend ; cp /mnt/mkrefpup/newfs/new.sfs /mnt/mkrefpup/newiso/puppy_librepup_6.0.2.2.sfs"  shell
+else
+    now "mksquashfs . /mnt/mkrefpup/newfs/new.sfs -noappend -comp xz -b 512K ; cp /mnt/mkrefpup/newfs/new.sfs /mnt/mkrefpup/newiso/puppy_librepup_6.0.2.2.sfs"  shell
+    fig
+
+now "/mnt/mkrefpup/refractafs/squashfs-root"  chdir
+iftrue fastcomp
+    now "mksquashfs . /mnt/mkrefpup/newiso/live/filesystem.squashfs -noappend"  shell
+else
+    now "mksquashfs . /mnt/mkrefpup/newiso/live/filesystem.squashfs -noappend -comp xz -b 512K"  shell
+    fig
+
+now "/mnt/mkrefpup/newiso"  chdir
+now "rm logo.16 ; cp /mnt/mkrefpup/logo.16 ."  shell
+
+now "genisoimage -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -r -J -l -o /mnt/mkrefpup/"  plus isoname  plus ".iso /mnt/mkrefpup/newiso/"  shell
