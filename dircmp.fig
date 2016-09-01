@@ -1,0 +1,65 @@
+
+#### dircmp
+
+#### license: creative commons cc0 1.0 (public domain) 
+#### http://creativecommons.org/publicdomain/zero/1.0/
+
+#### usage: dircmp file1-or-folder file2-or-folder
+
+#### compare two folders (or files containing lists) 
+#### list only files unique to each folder 
+
+# $ ls d1
+# apple banana d1 orange
+
+# $ ls d2
+# apple orange pear
+
+# $ dircmp d1 d2
+
+# d1 only: 
+# ./d1
+# ./banana
+
+# d2 only: 
+# ./pear
+
+# $ cd d2 ; find > ../d2.txt ; cd ..
+# $ dircmp d1 d2.txt
+
+# d1 only: 
+# ./d1
+# ./banana
+
+# d2.txt only: 
+# ./pear
+
+try
+f1 command mid 1 1 
+f2 command mid 2 1 
+o "if [ -f '" plus f1 plus "' ] ; then cat " plus f1 plus " ; else cd " plus f1 plus " ; find ; fi" arrshell
+p "if [ -f '" plus f2 plus "' ] ; then cat " plus f2 plus " ; else cd " plus f2 plus " ; find ; fi" arrshell
+except
+z "dircmp: usage: dircmp file1-or-folder file2-or-folder" print end
+resume
+
+xc
+yc
+
+z f1 prints " only: " print
+forin y o
+yin instr p y sgn
+ifequal yin 0
+z y print
+fig
+next
+
+z "" print
+
+z f2  prints  " only: "  print
+forin x p
+xin instr o x  sgn
+ifequal xin 0
+z x  print
+fig
+next
