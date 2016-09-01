@@ -1,0 +1,93 @@
+
+#### arrname - get dir/name/ext from list
+
+#### license: creative commons cc0 1.0 (public domain) 
+#### http://creativecommons.org/publicdomain/zero/1.0/
+
+# $ ls /etc/default/grub | arrname 1
+# /etc/default
+# $ ls /etc/default/grub | arrname 2
+# grub
+# $ ls /etc/rc.local | arrname 2
+# rc
+# $ ls /etc/rc.local | arrname 3
+# .local
+
+proginf = "arrname 0.1 - get dirname, filename, ext from stdin"
+
+# this program is FREE SOFTWARE and comes with NO WARRANTY
+
+# usage: | arrname __
+
+# __ 1=dir 2=name 3=ext
+
+function re(z p)
+f=z ; split(f p) ; join(f "") ; return(f)
+fig
+
+function dir(z, m)
+ln = z len
+r = z reverse 
+dloc = instr(r, "/")
+
+prdir "" # is the folder name
+iftrue dloc
+ifmore ln 1
+dl = ln minus dloc
+prdir = z left dl 
+ifequal prdir ""
+prdir "/"
+fig
+else
+dok = instr("/", z)
+iftrue dok
+prdir = z
+fig
+fig
+else
+prdir = " " plus z
+z = prdir
+prdir = ""
+fig
+
+ifequal m 1
+z prdir ltrim return z
+fig
+
+prname # name of file
+dl = dloc minus 1
+prname = z right dl
+floc = prname reverse instr(floc ".")
+fl = prname len minus floc
+pn = prname ltrim
+iftrue floc
+pn = prname left fl ltrim
+fig
+
+ifequal m 2
+z return pn
+fig
+
+pext "" # name of extension
+iftrue floc
+pn = prname right floc
+pext = pn
+fig
+
+ifequal m 3
+z return pext
+fig
+
+fig
+
+try
+c = command mid 1 1 val
+except
+p end
+resume
+forin (p stdin)
+cr=13 ; chr
+lf=10 ; chr
+z=p ; re(z cr) ; re(z lf)
+p=z dir(z, c) print
+next
