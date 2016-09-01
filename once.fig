@@ -1,0 +1,27 @@
+
+#### once -- similar to uniq, but doesnt require sort
+
+#### license: creative commons cc0 1.0 (public domain) 
+#### http://creativecommons.org/publicdomain/zero/1.0/
+
+proginf = "print each line of stdin only once, regardless of order of lines"
+
+function re(z p)
+f=z ; split(f p) ; join(f "") ; return(f)
+fig
+l ; arr
+forin (p stdin)
+cr=13 ; chr
+lf=10 ; chr
+z=p ; re(z cr) ; re(z lf)
+
+inl instr l z
+iftrue inl
+
+pass
+else
+p = z ; print
+l plus z
+fig
+
+next
