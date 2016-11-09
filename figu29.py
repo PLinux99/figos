@@ -2,7 +2,7 @@
 # coding: utf-8 
 #### license: creative commons cc0 1.0 (public domain) 
 #### http://creativecommons.org/publicdomain/zero/1.0/ 
-proginf = "figueira 2.9, oct 2016 mn"
+proginf = "figueira 2.9, nov 2016 mn"
 import sys
 import os
 from sys import stdin, stdout
