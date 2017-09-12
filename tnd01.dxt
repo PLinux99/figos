@@ -1,0 +1,47 @@
+# tnd 0.1 sep 2017 mn
+# requires dex 1.2
+# license: creative commons cc0 1.0 (public domain)
+# http://creativecommons.org/publicdomain/zero/1.0/
+spc " "
+cmts "mkfnc tdhw v"
+cmts "  cmts \"hello, world\""
+cmts "  nxt"
+cmts ""
+prog "x 5;helloworld;print x" 
+splt prog ";"
+len vl prog
+fr lines 1 vl 1
+  pr prog
+  lft pr lines
+  rt pr 1
+  join pr ""
+  splt pr spc
+  len pl pr
+  pars 1
+  pa pr
+  lft pa pars
+  rt pa 1
+  join pa ""
+  ifeql pa "helloworld"
+      cmts "tdhw v"
+  els
+    ifeql pa "print"
+        slcmts "cmts "    
+        pars 2
+        pa pr
+        lft pa pars
+        rt pa 1
+        join pa ""
+        cmts pa
+    els
+        slcmts pa 
+        slcmts " "
+        pars 2
+        pa pr
+        lft pa pars
+        rt pa 1
+        join pa ""
+        cmts pa
+        nxt
+      nxt
+  nxt
