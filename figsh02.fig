@@ -1,0 +1,544 @@
+#### license: creative commons cc0 1.0 (public domain)
+#### http://creativecommons.org/publicdomain/zero/1.0/
+
+proginf "figsh 0.2, oct 2017 mn" print
+now "" print
+
+cmd command join cmd " " 
+
+function getlist cmd
+    find "find -type f"
+    cmdlen cmd len
+    iftrue cmdlen
+        find "find " plus cmd plus " -type f"
+        fig 
+    quot 34 chr
+    p  find            arrshell
+    x  p               len       minus 1
+    p  left x          return p
+    fig
+
+
+function isoname p f
+    quot 34 chr
+    fs split f "|"
+    plen p len
+    psub " " arr times plen
+    pc 0
+    c 0
+    
+    forin s p
+        now  c   plus 1  swap now c
+        #now  "sha256sum " plus quot  plus x  plus quot  arrshell  mid 1 1
+        forin fsf fs
+            subs instr s fsf 
+            iftrue subs
+                now pc plus 1 swap now pc
+                psub arrset pc s
+                break
+                fig
+            next
+        fig
+
+    psub  left pc          return psub
+    fig
+
+function isoplus p f
+    quot 34 chr
+    fs split f "|" 
+    plen p len
+    psub " " arr times plen
+    pc 0
+    c 0
+    
+    forin x p
+        now  c   plus 1  swap now c
+        #now  "sha256sum " plus quot  plus x  plus quot  arrshell  mid 1 1
+        forin fsf fs
+            equot 92 chr plus quot 
+            efsf split fsf quot join efsf equot 
+            subs "grep " plus quot  plus efsf  plus quot plus " " plus quot plus x plus quot plus " | wc -l"  arrshell  mid 1 1 val
+            iftrue subs
+                now pc plus 1 swap now pc
+                psub arrset pc x
+                break
+                fig
+            next
+        fig
+
+    psub  left pc          return psub
+    fig
+
+
+
+function minusname p f
+    quot 34 chr
+    fs split f "|"
+    plen p len
+    psub " " arr times plen
+    pc 0
+    c 0
+    
+    forin s p
+        now  c   plus 1  swap now c
+        #now  "sha256sum " plus quot  plus x  plus quot  arrshell  mid 1 1
+        fsfcount 0
+        forin fsf fs
+            subs instr s fsf 
+            iftrue subs
+                fsfcount 1
+                break
+                fig
+            next
+        ifequal fsfcount 0
+            now pc plus 1 swap now pc
+            psub arrset pc s
+            fig
+        fig
+
+    psub  left pc          return psub
+    fig
+
+
+function doeach p f
+    quot 34 chr
+    plen p len
+    #psub " " arr times plen
+    pc 0
+    c 0
+    
+    v "leafpad geeqie gpicview ls du xdg-open evince xpdf mtpaint" split v " " instr v f
+    iftrue v
+        forin x p
+            now  c   plus 1  prints swap now c " " prints
+            now x print
+            now  f plus " " plus quot  plus x  plus quot plus " 2> /dev/null" shell
+            fig
+        fig
+    fig
+
+
+function putlist p s f
+    quot 34 chr
+    c 0
+    plen p len
+    ifmore s f 
+        now swap s f
+        fig
+    ifmore f plen 
+        f plen
+        fig     
+    sminus s minus 1
+    fminus f minus 1
+    forin x p 
+        ifmore s 0
+            ifless c sminus
+                now  c   plus 1  swap now c
+            else
+                ifmore c fminus
+                    now  c   plus 1  swap now c
+                else
+                    now  c   plus 1  prints  swap now c
+                    now  " " prints
+                    now  x   print
+                    fig
+                fig
+        else
+            now  c   plus 1  prints  swap now c
+            now  " " prints
+            now  x   print
+            fig
+        next
+        fig
+
+
+function sumlist p s f sum
+    quot 34 chr
+    c 0
+    plen p len
+    ifmore s f 
+        now swap s f
+        fig
+    ifmore f plen 
+        f plen
+        fig     
+    sminus s minus 1
+    fminus f minus 1
+    forin x p 
+        ifmore s 0
+            ifless c sminus
+                now  c   plus 1  swap now c
+            else
+                ifmore c fminus
+                    now  c   plus 1  swap now c
+                else
+
+                    ifequal sum "-"
+                        now  c   plus 1  prints  swap now c
+                        now  " " prints
+                        now  "sha256sum " plus quot  plus x  plus quot  arrshell  mid 1 1  print
+                    else
+                        now  c   plus 1  swap now c
+                        try
+                            get256  "sha256sum " plus quot  plus x  plus quot  arrshell  mid 1 1  left 64
+                            ifequal get256 sum
+                                now c prints " " prints
+                                now x prints " " prints get256
+                                fig
+                        except
+                            get256 ""
+                            resume
+                        fig
+
+                    fig
+                fig
+        else
+            now  c   plus 1  prints  swap now c
+            now  " " prints
+            now  x   print
+            fig
+        next
+        fig
+
+
+
+function sortlist p s f sum
+    quot 34 chr
+    c 0
+    plen p len
+    ifmore s f 
+        now swap s f
+        fig
+    ifmore f plen 
+        f plen
+        fig     
+    sminus s minus 1
+    fminus f minus 1
+    psort " " arr times plen   
+    c 0
+    forin x p
+        now  c   plus 1  swap now c
+        now  "sha256sum " plus quot  plus x  plus quot  arrshell  mid 1 1
+        psort arrset c now 
+        fig
+    psort arrsort
+    c 0
+    forin x psort 
+        ifmore s 0
+            ifless c sminus
+                now  c   plus 1  swap now c
+            else
+                ifmore c fminus
+                    now  c   plus 1  swap now c
+                else
+
+                    ifequal sum "-"
+                        now  c   plus 1  prints  swap now c
+                        now  " " prints
+                        now  x  print
+                    else
+                        now  c   plus 1  swap now c
+                        try
+                            get256  "sha256sum " plus quot  plus x  plus quot  arrshell  mid 1 1  left 64
+                            ifequal get256 sum
+                                now c prints " " prints
+                                now x prints " " prints get256
+                                fig
+                        except
+                            get256 ""
+                            resume
+                        fig
+
+                    fig
+                fig
+        else
+            now  c   plus 1  prints  swap now c
+            now  " " prints
+            now  x   print
+            fig
+        next
+        fig
+
+
+function sortdu p s f sum
+    quot 34 chr
+    c 0
+    plen p len
+    ifmore s f 
+        now swap s f
+        fig
+    ifmore f plen 
+        f plen
+        fig     
+    sminus s minus 1
+    fminus f minus 1
+    psort " " arr times plen   
+    c 0
+    forin x p
+        now  c   plus 1  swap now c
+        tab 9 chr
+        now  "du -b " plus quot  plus x  plus quot  arrshell  mid 1 1 split now tab mid 1 1 
+        du 32 chr times 11 plus now right 11 plus " " plus x
+        psort arrset c du 
+        fig
+    psort arrsort
+    c 0
+    forin x psort 
+        ifmore s 0
+            ifless c sminus
+                now  c   plus 1  swap now c
+            else
+                ifmore c fminus
+                    now  c   plus 1  swap now c
+                else
+
+                    ifequal sum "-"
+                        now  c   plus 1  prints  swap now c
+                        now  " " prints
+                        now  x  print
+                    else
+                        now  c   plus 1  swap now c
+                        try
+                            get256  "du -b " plus quot  plus x  plus quot  arrshell  mid 1 1  left 64
+                            ifequal get256 sum
+                                now c prints " " prints
+                                now x prints " " prints get256
+                                fig
+                        except
+                            get256 ""
+                            resume
+                        fig
+
+                    fig
+                fig
+        else
+            now  c   plus 1  prints  swap now c
+            now  " " prints
+            now  x   print
+            fig
+        next
+        fig
+
+
+
+
+quot 34 chr
+plist ""
+
+while
+
+while 
+    p    colortext 10  ""            prints  lineinput  ltrim  rtrim
+    lc   p             lcase    
+    plen p             len          
+    now  colortext 7   ""            prints
+
+    ifequal lc "q" 
+        break
+        fig
+    ifequal lc "?"
+        now colortext 7 ""                    print
+        now " q to quit"                      print
+        now " ? for help"                     print
+        now " pwd to print working directory" print
+        now " . to update"                    print
+        now ""                                print
+        now " each: leafpad geeqie gpicview ls du xdg-open evince xpdf mtpaint" print
+        now " shell: rm cat 256 ls"           print
+        now " r to refresh"                   print
+        now " r top bottom: specify range "   print
+        now ""                                print
+        now " dup name: find sha256sum duplicates of name"     print
+        now " isoname name: restrict list to what contains name"    print
+        now " minusname what: remove names from list by partial string (doesnt affect files)"    print
+        now " isoplus what: restrict list to files that include what (grep-like)"    print
+        now " sort256: do sha256sum for all entries, sorted"   print
+        now " with256: do sha256sum for all entries, unsorted" print
+        now " sortdu: do du -b for all entries, sorted"   print
+        now ""                                print
+        break
+        fig
+    ifequal lc "pwd" 
+        now colortext 7 "pwd" arrshell mid 1 1 print
+        break
+        fig
+    ifmore plen 4
+        pleft lc left 4
+        ifequal pleft "256 "
+            pright plen minus 3
+            now  p  right pright  reverse  plus "mus652ahs"  reverse  shell
+            break
+            fig
+        fig
+    ifmore plen 4
+        pleft lc left 4
+        ifequal pleft "dup "
+            pright plen minus 3 
+            sum  p  right pright  ltrim  rtrim  plus quot  reverse  plus quot plus " mus652ahs"  reverse arrshell mid 1 1
+            try
+            now sum  left 64 print swap now sum
+            plistlen plist len
+            p colortext 7 "" prints sumlist plist 1 plistlen sum
+            except 
+            sum ""
+            resume
+            now "" print "dup check complete" print
+            break
+            fig
+        fig
+    ifmore plen 8
+        pleft lc left 8
+        ifequal pleft "isoname "
+            plenminus plen minus 8
+            pright lc right plenminus 
+            try
+            plistlen plist len
+            p colortext 7 "" prints 
+            plist isoname plist pright  putlist plist -1 -1
+            except 
+            plistlen
+            resume
+            now "" print "isoname complete" print
+            break
+            fig
+        fig
+    ifmore plen 8
+        pleft lc left 8
+        ifequal pleft "isoplus "
+            plenminus plen minus 8
+            pright lc right plenminus 
+            try
+            plistlen plist len
+            p colortext 7 "" prints 
+            plist isoplus plist pright  putlist plist -1 -1
+            except 
+            plistlen
+            resume
+            now "" print "isoname complete" print
+            break
+            fig
+        fig
+    ifmore plen 10
+        pleft lc left 10
+        ifequal pleft "minusname "
+            plenminus plen minus 10
+            pright lc right plenminus 
+            try
+            plistlen plist len
+            p colortext 7 "" prints 
+            plist minusname plist pright  putlist plist -1 -1
+            except 
+            plistlen
+            resume
+            now "" print "minusname complete" print
+            break
+            fig
+        fig
+    ifmore plen 3
+        pleft lc left 3 
+        ifequal pleft "rm "
+            now p shell
+            lc "."
+            fig
+        fig
+    ifmore plen 4
+        pleft lc left 4 
+        ifequal pleft "cat "
+            now p shell
+            break
+            fig
+        fig
+    ifmore plen 5
+        pleft lc left 5 
+        ifequal pleft "each "
+            now split p " " mid 2 1  
+            try
+                plistlen plist len
+            except 
+                plistlen
+                plist ""
+                fig
+                p colortext 7 "" prints doeach plist now 
+                break
+            fig
+        fig
+    ifmore plen 3
+        pleft lc left 3 
+        ifequal pleft "ls "
+            now p shell
+            break
+            fig
+        fig
+    ifmore plen 2
+        pleft lc left 2 
+        ifequal pleft "r "
+            r split p " "
+            rlen r len
+            ifmore rlen 2
+            try
+                s  r  mid 2 1  val
+                f  r  mid 3 1  val
+                now colortext 7 "" prints putlist plist s f
+            except
+                r
+                resume
+            break
+            fig
+            fig
+        fig
+    ifequal lc "." 
+        plist colortext 7 "" prints getlist cmd putlist plist -1 -1
+        break
+        fig
+    ifequal lc "r" 
+        try
+            plistlen plist len
+        except 
+            plistlen
+            plist ""
+            fig
+        p colortext 7 "" prints putlist plist 1 plistlen
+        break
+        fig
+
+    ifequal lc "with256" 
+        try
+            plistlen plist len
+        except 
+            plistlen
+            plist ""
+            fig
+        p colortext 7 "" prints sumlist plist 1 plistlen "-"
+        break
+        fig
+
+    ifequal lc "sort256" 
+        try
+            plistlen plist len
+        except 
+            plistlen
+            plist ""
+            fig
+        p colortext 7 "" prints sortlist plist 1 plistlen "-"
+        break
+        fig
+
+    ifequal lc "sortdu" 
+        try
+            plistlen plist len
+        except 
+            plistlen
+            plist ""
+            fig
+        p colortext 7 "" prints sortdu plist 1 plistlen "-"
+        break
+        fig
+
+    now colortext 7   "? for help"  print
+    wend
+
+    ifequal lc "q" 
+        now "" print 
+        break
+        fig
+    wend
