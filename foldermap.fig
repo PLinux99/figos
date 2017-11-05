@@ -1,0 +1,116 @@
+
+#### license: creative commons cc0 1.0 (public domain) 
+#### http://creativecommons.org/publicdomain/zero/1.0/ 
+
+proginf = "foldermap 0.1, nov 2017 mn"
+
+function listdir p
+python
+    from os import listdir as ld ; return ld(p)
+    fig
+    fig
+
+function osep
+python 
+    from os import sep as p ; return p
+    fig
+    fig
+
+function islink p
+python 
+    from os import path ; return path.islink(p)
+    fig
+    fig
+
+function nolink p
+    nlink islink p sgn not return nlink 
+    fig
+
+function nodot p
+    ndot ". .." split ndot " " instr ndot p sgn not return ndot 
+    fig
+
+function brev path
+  has instr path "/"
+  iftrue has
+    has path reverse instr has "/"
+    now path reverse left has reverse return now
+    fig
+  now path reverse return now #path
+  fig
+
+function dc p
+  c 0
+  forin x p
+    ifequal x "/"
+      now c plus 1 swap now c
+      fig
+    next
+  now c plus 1 return now
+  fig
+
+sep osep 
+fc 0
+
+function listd lx
+sep osep
+p listdir lx #print
+plen p len
+python
+global fc
+fig
+#now fc plus plen swap now fc
+
+collects "</div>" arr
+
+forin x p
+  
+  cc nodot x
+  c nolink x plus cc times -1
+  ifmore c 1
+    try
+      path lx plus sep plus x 
+      now fc plus 1 swap now fc
+      collect listd path
+      rint dc path 
+      ifmore rint 14 
+      rint 14
+      fig
+      hl "pink coral pink coral pink orange gold orange gold orange lime lavender lime lavender" split hl " " mid rint 1
+      patha brev path
+      now "<div style='padding: 2px; margin: 2px; float: right; border-width: 1px; border-style: solid; background-color: " plus hl plus ";'><span style='font-size: 9px;'>" plus patha plus "</span>" # print  
+      #collects plus "-= --"
+      collects plus collect
+      #collects plus "-- =-"
+      collects plus now
+
+    except
+      now "<!-- file: " plus path plus " --><span style='font-size: 9px;'> &#9608;</span>"
+      collects plus now
+      resume
+    fig
+  next
+    now return collects
+
+fig
+
+collect listd "." 
+
+clen collect len
+now collect reverse 
+
+bal 0
+forin p collect
+has instr p "<div"
+iftrue has
+    now bal plus 1 swap now bal
+    fig
+ifequal p "</div>"
+    now bal minus 1 swap now bal 
+    fig
+now p print
+next
+
+for p 1 bal 1
+now "<div>" print
+next
