@@ -1,0 +1,162 @@
+#### license: creative commons cc0 1.0 (public domain)
+#### http://creativecommons.org/publicdomain/zero/1.0/
+
+proginf "findsim 0.1, nov 2017 mn" print
+now "" print
+
+min 75 # percentage of similiarity to consider relevant
+max 32768 # largest size of file to consider
+
+python
+    from os import path
+    from hashlib import sha256
+    fig
+
+cmd command join cmd " " 
+
+
+
+function getlist cmd
+    find "find -type f"
+    cmdlen cmd len
+    iftrue cmdlen
+        find "find " plus cmd plus " -type f"
+        fig 
+    quot 34 chr
+    p  find            arrshell
+    x  p               len       minus 1
+    p  left x          return p
+    fig
+
+function size p
+python
+    return int(path.getsize(p))
+    fig
+    fig
+
+function sha256sum p
+python
+    return sha256(open(p).read()).hexdigest()
+    fig
+    fig
+
+files arr mid 1 0 # sizes
+filen arr mid 1 0 # names
+filec arr mid 1 0 # contents
+fileh arr mid 1 0 # hashes
+filed arr mid 1 0 # done already
+filelist arr mid 1 0 # output
+
+p getlist cmd
+forin f p
+now f prints " " prints
+fs size f prints 
+now " " prints
+ifmore fs max
+    now "max is " prints get max prints ", skipping" print
+else
+    filen plus f
+    files plus fs
+
+    now sha256sum f print 
+    fileh plus now
+    
+    contentarr arropen f join contentarr " " split contentarr " " arrsort
+    content ""
+    oldc ""
+    forin c contentarr
+        iftrue c
+            ifequal c oldc
+                c oldc
+            else
+                now content plus c plus " " swap now content
+                fig
+            fig 
+        next
+    filec plus content
+    fig
+next
+
+function getp x y
+    px split x " "
+    py split y " "
+    xlen px len
+    ylen py len
+    xc
+    yc
+    b ""
+    forin p px  
+        c instr py p 
+        ifequal p b
+            c 0
+            fig
+        iftrue c
+            now xc plus 1 swap now xc
+            b p
+            fig     
+        next
+    xper xc divby xlen
+    forin p py  
+        c instr px p 
+        ifequal p b
+            c 0
+            fig
+        iftrue c
+            now yc plus 1 swap now yc
+            b p
+            fig     
+        next
+    yper yc divby ylen
+    now xper plus yper divby 2 times 100 int return now
+    fig
+
+filen print
+quot 34 chr
+
+filenlen filen len
+for x 1 filenlen 1
+for y 1 filenlen 1
+
+a arrget filen x
+b arrget filen y
+fwd quot  plus a  plus quot  plus " "  plus quot  plus b  plus quot
+rev quot  plus b  plus quot  plus " "  plus quot  plus a  plus quot
+
+already instr filed rev
+ifequal a b
+    already 1
+    fig
+
+iftrue already
+    already 1
+else
+    filed plus fwd     
+    ca arrget filec x 
+    cb arrget filec y
+    cas arrget files x
+    cbs arrget files y
+    cah arrget fileh x
+    cbh arrget fileh y
+    ifequal ca cb
+        now 100 prints " " prints
+        now fwd prints " # " prints
+        now cas prints " " prints
+        ifequal cah cbh    
+            now cbs prints colourtext 8 " match: " plus cah prints colourtext 7 "" print
+        else
+            now cbs print
+            fig
+    else
+        per getp ca cb	
+        ifless per min
+            now fwd
+        else
+            now per prints " " prints
+            now fwd prints " # " prints
+            now cas prints " " prints
+            now cbs print
+        fig
+    fig
+
+next
+next
